@@ -1,0 +1,1242 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="4/27/2019 2:00:27 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="ZAC"
+  DTS:CreatorName="ZAC\Zac"
+  DTS:DTSID="{A41F73CE-D89F-46F3-9BFB-D620BC49AC9A}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="15.0.1100.123"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="SalesETL1"
+  DTS:PackageType="5"
+  DTS:VersionBuild="14"
+  DTS:VersionGUID="{81865EF4-522B-4D84-8EE9-4CC869B8F1CC}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[LocalHost.AdventureWorks2014]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{733B3ACC-CD8D-4A4F-8D3C-412B3DF337ED}"
+      DTS:ObjectName="LocalHost.AdventureWorks2014">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=.;Initial Catalog=AdventureWorks2014;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[LocalHost.AdventureWorksStagingDW]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{5481E7BA-8F97-4D49-BEEF-54EB3AFC46EE}"
+      DTS:ObjectName="LocalHost.AdventureWorksStagingDW">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=.;Initial Catalog=AdventureWorksStagingDW;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Create staging SalesPerson"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{948FC9AA-AC79-444C-B848-A44030C2983A}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Create staging SalesPerson"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{5481E7BA-8F97-4D49-BEEF-54EB3AFC46EE}"
+          SQLTask:SqlStatementSource="IF OBJECT_ID('StagingSalesPerson') IS NOT NULL&#xA;DROP TABLE StagingSalesPerson;&#xA;GO&#xA;&#xA;CREATE TABLE StagingSalesPerson(&#xA;&#x9;[SalesPerson_id] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;[FirstName] [varchar](255) NULL,&#xA;&#x9;[LastName] [varchar](255) NULL,&#xA;&#x9;[JobTitle] [varchar](255) NULL,&#xA;&#x9;[gender] [varchar](255) NULL,&#xA;&#x9;[HiringDate] [int] NULL,&#xA;&#x9;[BirthDate] [int] NULL,&#xA;&#x9;[SalesPersonKey] [int] NULL,&#xA;PRIMARY KEY CLUSTERED &#xA;(&#xA;&#x9;[SalesPerson_id] ASC&#xA;)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]&#xA;) ON [PRIMARY]&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Stage SalesPerson"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{44B6B6FA-633A-4212-8F91-CEE1F3F6FBFA}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Stage SalesPerson"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Stage SalesPerson\Change Name to uppercase"
+              componentClassID="Microsoft.CharacterMap"
+              contactInfo="Character Map;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+              description="Specifies the string operations to apply."
+              name="Change Name to uppercase"
+              usesDispositions="true"
+              version="2">
+              <inputs>
+                <input
+                  refId="Package\Stage SalesPerson\Change Name to uppercase.Inputs[Character Map Input]"
+                  name="Character Map Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Change Name to uppercase.Inputs[Character Map Input].Columns[Unicode FirstName]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Unicode FirstName"
+                      errorOrTruncationOperation="Map Column"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode FirstName]"
+                      truncationRowDisposition="FailComponent"
+                      usageType="readWrite">
+                      <properties>
+                        <property
+                          dataType="System.UInt32"
+                          name="MapFlags"
+                          typeConverter="LCMappingType">512</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Change Name to uppercase.Inputs[Character Map Input].Columns[Unicode LastName]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Unicode LastName"
+                      errorOrTruncationOperation="Map Column"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode LastName]"
+                      truncationRowDisposition="FailComponent"
+                      usageType="readWrite">
+                      <properties>
+                        <property
+                          dataType="System.UInt32"
+                          name="MapFlags"
+                          typeConverter="LCMappingType">512</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Stage SalesPerson\Change Name to uppercase.Outputs[Character Map Output]"
+                  exclusionGroup="1"
+                  name="Character Map Output"
+                  synchronousInputId="Package\Stage SalesPerson\Change Name to uppercase.Inputs[Character Map Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Stage SalesPerson\Change Name to uppercase.Outputs[Character Map Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Character Map Error Output"
+                  synchronousInputId="Package\Stage SalesPerson\Change Name to uppercase.Inputs[Character Map Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Change Name to uppercase.Outputs[Character Map Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Change Name to uppercase.Outputs[Character Map Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Change Name to uppercase.Outputs[Character Map Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Change Name to uppercase.Outputs[Character Map Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode"
+              componentClassID="Microsoft.DataConvert"
+              contactInfo="Data Conversion;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+              description="Data Conversion"
+              name="Convert from Non-Uni to Unicode"
+              usesDispositions="true">
+              <inputs>
+                <input
+                  refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Inputs[Data Conversion Input]"
+                  name="Data Conversion Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Inputs[Data Conversion Input].Columns[FirstName]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="FirstName"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[FirstName]" />
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Inputs[Data Conversion Input].Columns[LastName]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="LastName"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[LastName]" />
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Inputs[Data Conversion Input].Columns[JobTitle]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="JobTitle"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[JobTitle]" />
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Inputs[Data Conversion Input].Columns[Title]"
+                      cachedDataType="wstr"
+                      cachedLength="8"
+                      cachedName="Title"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[Title]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output]"
+                  exclusionGroup="1"
+                  name="Data Conversion Output"
+                  synchronousInputId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Inputs[Data Conversion Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode FirstName]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode FirstName]"
+                      name="Unicode FirstName"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Specifies the input column used as the source of data for the conversion."
+                          name="SourceInputColumnLineageID">#{Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[FirstName]}</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode LastName]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode LastName]"
+                      name="Unicode LastName"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Specifies the input column used as the source of data for the conversion."
+                          name="SourceInputColumnLineageID">#{Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[LastName]}</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode JobTitle]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode JobTitle]"
+                      name="Unicode JobTitle"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Specifies the input column used as the source of data for the conversion."
+                          name="SourceInputColumnLineageID">#{Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[JobTitle]}</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode Title]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      length="8"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode Title]"
+                      name="Unicode Title"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Specifies the input column used as the source of data for the conversion."
+                          name="SourceInputColumnLineageID">#{Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[Title]}</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                          name="FastParse">false</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Data Conversion Error Output"
+                  synchronousInputId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Inputs[Data Conversion Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Stage SalesPerson\Grab data from AW DB source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="Grab data from AW DB source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[Sales].[vSalesPerson]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">0</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Stage SalesPerson\Grab data from AW DB source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[LocalHost.AdventureWorks2014]"
+                  connectionManagerRefId="Package.ConnectionManagers[LocalHost.AdventureWorks2014]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[BusinessEntityID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[BusinessEntityID]"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[BusinessEntityID]"
+                      name="BusinessEntityID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[JobTitle]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[JobTitle]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[JobTitle]"
+                      name="JobTitle"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[SalesQuota]"
+                      dataType="cy"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[SalesQuota]"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[SalesQuota]"
+                      name="SalesQuota"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[SalesYTD]"
+                      dataType="cy"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[SalesYTD]"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[SalesYTD]"
+                      name="SalesYTD"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[SalesLastYear]"
+                      dataType="cy"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[SalesLastYear]"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[SalesLastYear]"
+                      name="SalesLastYear"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[Title]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[Title]"
+                      length="8"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[Title]"
+                      name="Title"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[FirstName]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[FirstName]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[FirstName]"
+                      name="FirstName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[MiddleName]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[MiddleName]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[MiddleName]"
+                      name="MiddleName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[LastName]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[LastName]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[LastName]"
+                      name="LastName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[Suffix]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[Suffix]"
+                      length="10"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[Suffix]"
+                      name="Suffix"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[PhoneNumber]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[PhoneNumber]"
+                      length="25"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[PhoneNumber]"
+                      name="PhoneNumber"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[PhoneNumberType]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[PhoneNumberType]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[PhoneNumberType]"
+                      name="PhoneNumberType"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[EmailAddress]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[EmailAddress]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[EmailAddress]"
+                      name="EmailAddress"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[EmailPromotion]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[EmailPromotion]"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[EmailPromotion]"
+                      name="EmailPromotion"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[AddressLine1]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[AddressLine1]"
+                      length="60"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[AddressLine1]"
+                      name="AddressLine1"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[AddressLine2]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[AddressLine2]"
+                      length="60"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[AddressLine2]"
+                      name="AddressLine2"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[City]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[City]"
+                      length="30"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[City]"
+                      name="City"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[StateProvinceName]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[StateProvinceName]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[StateProvinceName]"
+                      name="StateProvinceName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[PostalCode]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[PostalCode]"
+                      length="15"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[PostalCode]"
+                      name="PostalCode"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[CountryRegionName]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[CountryRegionName]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[CountryRegionName]"
+                      name="CountryRegionName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[TerritoryName]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[TerritoryName]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[TerritoryName]"
+                      name="TerritoryName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[TerritoryGroup]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[TerritoryGroup]"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[TerritoryGroup]"
+                      name="TerritoryGroup"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[BusinessEntityID]"
+                      dataType="i4"
+                      name="BusinessEntityID" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[JobTitle]"
+                      dataType="wstr"
+                      length="50"
+                      name="JobTitle" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[SalesQuota]"
+                      dataType="cy"
+                      name="SalesQuota" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[SalesYTD]"
+                      dataType="cy"
+                      name="SalesYTD" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[SalesLastYear]"
+                      dataType="cy"
+                      name="SalesLastYear" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[Title]"
+                      dataType="wstr"
+                      length="8"
+                      name="Title" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[FirstName]"
+                      dataType="wstr"
+                      length="50"
+                      name="FirstName" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[MiddleName]"
+                      dataType="wstr"
+                      length="50"
+                      name="MiddleName" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[LastName]"
+                      dataType="wstr"
+                      length="50"
+                      name="LastName" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[Suffix]"
+                      dataType="wstr"
+                      length="10"
+                      name="Suffix" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[PhoneNumber]"
+                      dataType="wstr"
+                      length="25"
+                      name="PhoneNumber" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[PhoneNumberType]"
+                      dataType="wstr"
+                      length="50"
+                      name="PhoneNumberType" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[EmailAddress]"
+                      dataType="wstr"
+                      length="50"
+                      name="EmailAddress" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[EmailPromotion]"
+                      dataType="i4"
+                      name="EmailPromotion" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[AddressLine1]"
+                      dataType="wstr"
+                      length="60"
+                      name="AddressLine1" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[AddressLine2]"
+                      dataType="wstr"
+                      length="60"
+                      name="AddressLine2" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[City]"
+                      dataType="wstr"
+                      length="30"
+                      name="City" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[StateProvinceName]"
+                      dataType="wstr"
+                      length="50"
+                      name="StateProvinceName" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[PostalCode]"
+                      dataType="wstr"
+                      length="15"
+                      name="PostalCode" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[CountryRegionName]"
+                      dataType="wstr"
+                      length="50"
+                      name="CountryRegionName" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[TerritoryName]"
+                      dataType="wstr"
+                      length="50"
+                      name="TerritoryName" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].ExternalColumns[TerritoryGroup]"
+                      dataType="wstr"
+                      length="50"
+                      name="TerritoryGroup" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[BusinessEntityID]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[BusinessEntityID]"
+                      name="BusinessEntityID" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[JobTitle]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[JobTitle]"
+                      name="JobTitle" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[Title]"
+                      dataType="wstr"
+                      length="8"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[Title]"
+                      name="Title" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[FirstName]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[FirstName]"
+                      name="FirstName" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[MiddleName]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[MiddleName]"
+                      name="MiddleName" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[LastName]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[LastName]"
+                      name="LastName" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[Suffix]"
+                      dataType="wstr"
+                      length="10"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[Suffix]"
+                      name="Suffix" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[PhoneNumber]"
+                      dataType="wstr"
+                      length="25"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[PhoneNumber]"
+                      name="PhoneNumber" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[PhoneNumberType]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[PhoneNumberType]"
+                      name="PhoneNumberType" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[EmailAddress]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[EmailAddress]"
+                      name="EmailAddress" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[EmailPromotion]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[EmailPromotion]"
+                      name="EmailPromotion" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[AddressLine1]"
+                      dataType="wstr"
+                      length="60"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[AddressLine1]"
+                      name="AddressLine1" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[AddressLine2]"
+                      dataType="wstr"
+                      length="60"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[AddressLine2]"
+                      name="AddressLine2" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[City]"
+                      dataType="wstr"
+                      length="30"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[City]"
+                      name="City" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[StateProvinceName]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[StateProvinceName]"
+                      name="StateProvinceName" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[PostalCode]"
+                      dataType="wstr"
+                      length="15"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[PostalCode]"
+                      name="PostalCode" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[CountryRegionName]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[CountryRegionName]"
+                      name="CountryRegionName" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[TerritoryName]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[TerritoryName]"
+                      name="TerritoryName" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[TerritoryGroup]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[TerritoryGroup]"
+                      name="TerritoryGroup" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[SalesQuota]"
+                      dataType="cy"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[SalesQuota]"
+                      name="SalesQuota" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[SalesYTD]"
+                      dataType="cy"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[SalesYTD]"
+                      name="SalesYTD" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[SalesLastYear]"
+                      dataType="cy"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Error Output].Columns[SalesLastYear]"
+                      name="SalesLastYear" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Stage SalesPerson\Stage SalesPerson"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="Stage SalesPerson"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[StagingSalesPerson]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">3</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">true</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Stage SalesPerson\Stage SalesPerson.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[LocalHost.AdventureWorksStagingDW]"
+                  connectionManagerRefId="Package.ConnectionManagers[LocalHost.AdventureWorksStagingDW]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="IgnoreFailure"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].Columns[BusinessEntityID]"
+                      cachedDataType="i4"
+                      cachedName="BusinessEntityID"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[SalesPersonKey]"
+                      lineageId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output].Columns[BusinessEntityID]" />
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].Columns[Unicode FirstName]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Unicode FirstName"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[FirstName]"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode FirstName]" />
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].Columns[Unicode LastName]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Unicode LastName"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[LastName]"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode LastName]" />
+                    <inputColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].Columns[Unicode JobTitle]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Unicode JobTitle"
+                      externalMetadataColumnId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[JobTitle]"
+                      lineageId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output].Columns[Unicode JobTitle]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[SalesPerson_id]"
+                      dataType="i4"
+                      name="SalesPerson_id" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[FirstName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
+                      name="FirstName" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[LastName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
+                      name="LastName" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[JobTitle]"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
+                      name="JobTitle" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[gender]"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
+                      name="gender" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[HiringDate]"
+                      dataType="i4"
+                      name="HiringDate" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[BirthDate]"
+                      dataType="i4"
+                      name="BirthDate" />
+                    <externalMetadataColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input].ExternalColumns[SalesPersonKey]"
+                      dataType="i4"
+                      name="SalesPersonKey" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Stage SalesPerson\Stage SalesPerson.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Stage SalesPerson.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Stage SalesPerson\Stage SalesPerson.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Stage SalesPerson\Stage SalesPerson.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Stage SalesPerson.Paths[Character Map Output]"
+              endId="Package\Stage SalesPerson\Stage SalesPerson.Inputs[OLE DB Destination Input]"
+              name="Character Map Output"
+              startId="Package\Stage SalesPerson\Change Name to uppercase.Outputs[Character Map Output]" />
+            <path
+              refId="Package\Stage SalesPerson.Paths[Data Conversion Output]"
+              endId="Package\Stage SalesPerson\Change Name to uppercase.Inputs[Character Map Input]"
+              name="Data Conversion Output"
+              startId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Outputs[Data Conversion Output]" />
+            <path
+              refId="Package\Stage SalesPerson.Paths[OLE DB Source Output]"
+              endId="Package\Stage SalesPerson\Convert from Non-Uni to Unicode.Inputs[Data Conversion Input]"
+              name="OLE DB Source Output"
+              startId="Package\Stage SalesPerson\Grab data from AW DB source.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{F9D28BFE-2CEF-4B8A-86F5-A1400144F30D}"
+      DTS:From="Package\Create staging SalesPerson"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Stage SalesPerson" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="207,42"
+          Id="Package\Create staging SalesPerson"
+          TopLeft="315,111" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Stage SalesPerson"
+          TopLeft="335,227" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="418,153">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,74"
+              Start="0,0"
+              End="0,66.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,66.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <TaskHost
+    design-time-name="Package\Stage SalesPerson">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="221,42"
+          Id="Package\Stage SalesPerson\Grab data from AW DB source"
+          TopLeft="497,85" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Stage SalesPerson\Stage SalesPerson"
+          TopLeft="503,404" />
+        <NodeLayout
+          Size="236,42"
+          Id="Package\Stage SalesPerson\Convert from Non-Uni to Unicode"
+          TopLeft="491,199" />
+        <EdgeLayout
+          Id="Package\Stage SalesPerson.Paths[OLE DB Source Output]"
+          TopLeft="608.25,127">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,72"
+              Start="0,0"
+              End="0,64.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,64.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="209,42"
+          Id="Package\Stage SalesPerson\Change Name to uppercase"
+          TopLeft="516,295" />
+        <EdgeLayout
+          Id="Package\Stage SalesPerson.Paths[Data Conversion Output]"
+          TopLeft="609,241">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="11.5,54"
+              Start="0,0"
+              End="11.5,46.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,23" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,23"
+                    Point2="0,27"
+                    Point3="4,27" />
+                  <mssgle:LineSegment
+                    End="7.5,27" />
+                  <mssgle:CubicBezierSegment
+                    Point1="7.5,27"
+                    Point2="11.5,27"
+                    Point3="11.5,31" />
+                  <mssgle:LineSegment
+                    End="11.5,46.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Stage SalesPerson.Paths[Character Map Output]"
+          TopLeft="620.5,337">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-35,67"
+              Start="0,0"
+              End="-35,59.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,29.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,29.5"
+                    Point2="0,33.5"
+                    Point3="-4,33.5" />
+                  <mssgle:LineSegment
+                    End="-31,33.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-31,33.5"
+                    Point2="-35,33.5"
+                    Point3="-35,37.5" />
+                  <mssgle:LineSegment
+                    End="-35,59.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Stage SalesPerson\Grab data from AW DB source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Stage SalesPerson\Stage SalesPerson">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

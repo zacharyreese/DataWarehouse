@@ -1,0 +1,707 @@
+**Create DW database**
+
+IF NOT EXISTS(SELECT * FROM sys.databases WHERE NAME = "AdventureWorksDW")
+Create database AdventureWorksDW
+
+**Create Fact SalesOrderHeader**
+
+IF OBJECT_ID('dbo.FactSalesOrderHeader') IS NOT NULL
+drop table dbo.FactSalesOrderHeader
+
+create table dbo.FactSalesOrderHeader(
+SalesOrderHeader_id int identity(1,1) primary key,
+SalesTerritoryKey int,
+ProductCategoryKey int,
+ProductKey int,
+salesPerson_id int,
+DateKey int,
+CreditCardID int,
+CustomerKey int
+);
+
+**Dim sales territory**
+
+CREATE TABLE [dbo].[DimSalesTerritory](
+	[SalesTerritoryKey] [int] IDENTITY(1,1) NOT NULL,
+	[SalesTerritoryAlternateKey] [int] NULL,
+	[SalesTerritoryRegion] [nvarchar](50) NOT NULL,
+	[SalesTerritoryCountry] [nvarchar](50) NOT NULL,
+	[SalesTerritoryGroup] [nvarchar](50) NULL,
+	[SalesTerritoryImage] [varbinary](max) NULL,
+ CONSTRAINT [PK_DimSalesTerritory_SalesTerritoryKey] PRIMARY KEY CLUSTERED 
+(
+	[SalesTerritoryKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [AK_DimSalesTerritory_SalesTerritoryAlternateKey] UNIQUE NONCLUSTERED 
+(
+	[SalesTerritoryAlternateKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+**Dim Product**
+
+CREATE TABLE [dbo].[DimProduct](
+	[ProductKey] [int] IDENTITY(1,1) NOT NULL,
+	[ProductAlternateKey] [nvarchar](25) NULL,
+	[ProductSubcategoryKey] [int] NULL,
+	[WeightUnitMeasureCode] [nchar](3) NULL,
+	[SizeUnitMeasureCode] [nchar](3) NULL,
+	[EnglishProductName] [nvarchar](50) NOT NULL,
+	[SpanishProductName] [nvarchar](50) NOT NULL,
+	[FrenchProductName] [nvarchar](50) NOT NULL,
+	[StandardCost] [money] NULL,
+	[FinishedGoodsFlag] [bit] NOT NULL,
+	[Color] [nvarchar](15) NOT NULL,
+	[SafetyStockLevel] [smallint] NULL,
+	[ReorderPoint] [smallint] NULL,
+	[ListPrice] [money] NULL,
+	[Size] [nvarchar](50) NULL,
+	[SizeRange] [nvarchar](50) NULL,
+	[Weight] [float] NULL,
+	[DaysToManufacture] [int] NULL,
+	[ProductLine] [nchar](2) NULL,
+	[DealerPrice] [money] NULL,
+	[Class] [nchar](2) NULL,
+	[Style] [nchar](2) NULL,
+	[ModelName] [nvarchar](50) NULL,
+	[LargePhoto] [varbinary](max) NULL,
+	[EnglishDescription] [nvarchar](400) NULL,
+	[FrenchDescription] [nvarchar](400) NULL,
+	[ChineseDescription] [nvarchar](400) NULL,
+	[ArabicDescription] [nvarchar](400) NULL,
+	[HebrewDescription] [nvarchar](400) NULL,
+	[ThaiDescription] [nvarchar](400) NULL,
+	[GermanDescription] [nvarchar](400) NULL,
+	[JapaneseDescription] [nvarchar](400) NULL,
+	[TurkishDescription] [nvarchar](400) NULL,
+	[StartDate] [datetime] NULL,
+	[EndDate] [datetime] NULL,
+	[Status] [nvarchar](7) NULL,
+ CONSTRAINT [PK_DimProduct_ProductKey] PRIMARY KEY CLUSTERED 
+(
+	[ProductKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [AK_DimProduct_ProductAlternateKey_StartDate] UNIQUE NONCLUSTERED 
+(
+	[ProductAlternateKey] ASC,
+	[StartDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+**Dim Sales Person **
+
+CREATE TABLE dbo.DimSalesPerson(
+SalesPerson_id int IDENTITY(1,1) primary key,
+FirstName varchar(255),
+LastName varchar(255),
+JobTitle varchar(255),
+gender varchar (255),
+HiringDate int,
+BirthDate int,
+SalesPersonKey int
+);
+
+**Dim date **
+
+CREATE TABLE [dbo].[DimDate](
+	[DateKey] [int] NOT NULL,
+	[FullDateAlternateKey] [date] NOT NULL,
+	[DayNumberOfWeek] [tinyint] NOT NULL,
+	[EnglishDayNameOfWeek] [nvarchar](10) NOT NULL,
+	[SpanishDayNameOfWeek] [nvarchar](10) NOT NULL,
+	[FrenchDayNameOfWeek] [nvarchar](10) NOT NULL,
+	[DayNumberOfMonth] [tinyint] NOT NULL,
+	[DayNumberOfYear] [smallint] NOT NULL,
+	[WeekNumberOfYear] [tinyint] NOT NULL,
+	[EnglishMonthName] [nvarchar](10) NOT NULL,
+	[SpanishMonthName] [nvarchar](10) NOT NULL,
+	[FrenchMonthName] [nvarchar](10) NOT NULL,
+	[MonthNumberOfYear] [tinyint] NOT NULL,
+	[CalendarQuarter] [tinyint] NOT NULL,
+	[CalendarYear] [smallint] NOT NULL,
+	[CalendarSemester] [tinyint] NOT NULL,
+	[FiscalQuarter] [tinyint] NOT NULL,
+	[FiscalYear] [smallint] NOT NULL,
+	[FiscalSemester] [tinyint] NOT NULL,
+ CONSTRAINT [PK_DimDate_DateKey] PRIMARY KEY CLUSTERED 
+(
+	[DateKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim customer**
+
+CREATE TABLE [dbo].[DimCustomer](
+	[CustomerKey] [int] IDENTITY(1,1) NOT NULL,
+	[GeographyKey] [int] NULL,
+	[CustomerAlternateKey] [nvarchar](15) NOT NULL,
+	[Title] [nvarchar](8) NULL,
+	[FirstName] [nvarchar](50) NULL,
+	[MiddleName] [nvarchar](50) NULL,
+	[LastName] [nvarchar](50) NULL,
+	[NameStyle] [bit] NULL,
+	[BirthDate] [date] NULL,
+	[MaritalStatus] [nchar](1) NULL,
+	[Suffix] [nvarchar](10) NULL,
+	[Gender] [nvarchar](1) NULL,
+	[EmailAddress] [nvarchar](50) NULL,
+	[YearlyIncome] [money] NULL,
+	[TotalChildren] [tinyint] NULL,
+	[NumberChildrenAtHome] [tinyint] NULL,
+	[EnglishEducation] [nvarchar](40) NULL,
+	[SpanishEducation] [nvarchar](40) NULL,
+	[FrenchEducation] [nvarchar](40) NULL,
+	[EnglishOccupation] [nvarchar](100) NULL,
+	[SpanishOccupation] [nvarchar](100) NULL,
+	[FrenchOccupation] [nvarchar](100) NULL,
+	[HouseOwnerFlag] [nchar](1) NULL,
+	[NumberCarsOwned] [tinyint] NULL,
+	[AddressLine1] [nvarchar](120) NULL,
+	[AddressLine2] [nvarchar](120) NULL,
+	[Phone] [nvarchar](20) NULL,
+	[DateFirstPurchase] [date] NULL,
+	[CommuteDistance] [nvarchar](15) NULL,
+ CONSTRAINT [PK_DimCustomer_CustomerKey] PRIMARY KEY CLUSTERED 
+(
+	[CustomerKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim Credit Card **
+
+CREATE TABLE dbo.DimCreditCard(
+	[CreditCardID] [int] IDENTITY(1,1) NOT NULL,
+	[CardType] [nvarchar](50) NOT NULL,
+	[CardNumber] [nvarchar](25) NOT NULL,
+	[ExpMonth] [tinyint] NOT NULL,
+	[ExpYear] [smallint] NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_CreditCard_CreditCardID] PRIMARY KEY CLUSTERED 
+(
+	[CreditCardID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim Product**
+
+CREATE TABLE [dbo].[DimProduct](
+	[ProductKey] [int] IDENTITY(1,1) NOT NULL,
+	[ProductAlternateKey] [nvarchar](25) NULL,
+	[ProductSubcategoryKey] [int] NULL,
+	[WeightUnitMeasureCode] [nchar](3) NULL,
+	[SizeUnitMeasureCode] [nchar](3) NULL,
+	[EnglishProductName] [nvarchar](50) NOT NULL,
+	[SpanishProductName] [nvarchar](50) NOT NULL,
+	[FrenchProductName] [nvarchar](50) NOT NULL,
+	[StandardCost] [money] NULL,
+	[FinishedGoodsFlag] [bit] NOT NULL,
+	[Color] [nvarchar](15) NOT NULL,
+	[SafetyStockLevel] [smallint] NULL,
+	[ReorderPoint] [smallint] NULL,
+	[ListPrice] [money] NULL,
+	[Size] [nvarchar](50) NULL,
+	[SizeRange] [nvarchar](50) NULL,
+	[Weight] [float] NULL,
+	[DaysToManufacture] [int] NULL,
+	[ProductLine] [nchar](2) NULL,
+	[DealerPrice] [money] NULL,
+	[Class] [nchar](2) NULL,
+	[Style] [nchar](2) NULL,
+	[ModelName] [nvarchar](50) NULL,
+	[LargePhoto] [varbinary](max) NULL,
+	[EnglishDescription] [nvarchar](400) NULL,
+	[FrenchDescription] [nvarchar](400) NULL,
+	[ChineseDescription] [nvarchar](400) NULL,
+	[ArabicDescription] [nvarchar](400) NULL,
+	[HebrewDescription] [nvarchar](400) NULL,
+	[ThaiDescription] [nvarchar](400) NULL,
+	[GermanDescription] [nvarchar](400) NULL,
+	[JapaneseDescription] [nvarchar](400) NULL,
+	[TurkishDescription] [nvarchar](400) NULL,
+	[StartDate] [datetime] NULL,
+	[EndDate] [datetime] NULL,
+	[Status] [nvarchar](7) NULL,
+ CONSTRAINT [PK_DimProduct_ProductKey] PRIMARY KEY CLUSTERED 
+(
+	[ProductKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [AK_DimProduct_ProductAlternateKey_StartDate] UNIQUE NONCLUSTERED 
+(
+	[ProductAlternateKey] ASC,
+	[StartDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+**Dim product category**
+
+CREATE TABLE [dbo].[DimProductCategory](
+	[ProductCategoryKey] [int] IDENTITY(1,1) NOT NULL,
+	[ProductCategoryAlternateKey] [int] NULL,
+	[EnglishProductCategoryName] [nvarchar](50) NOT NULL,
+	[SpanishProductCategoryName] [nvarchar](50) NOT NULL,
+	[FrenchProductCategoryName] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_DimProductCategory_ProductCategoryKey] PRIMARY KEY CLUSTERED 
+(
+	[ProductCategoryKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [AK_DimProductCategory_ProductCategoryAlternateKey] UNIQUE NONCLUSTERED 
+(
+	[ProductCategoryAlternateKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Sales Foreign Key references** 
+
+ALTER TABLE dbo.FactSalesOrderHeader
+ADD CONSTRAINT fk_TerritoryID
+FOREIGN KEY (SalesTerritoryKey) REFERENCES
+dbo.DimSalesTerritory(SalesTerritoryKey);
+
+ALTER TABLE dbo.FactSalesOrderHeader
+ADD CONSTRAINT fk_ProductCategory
+FOREIGN KEY (ProductCategoryKey) REFERENCES
+dbo.DimProductCategory(ProductCategoryKey);
+
+ALTER TABLE dbo.FactSalesOrderHeader
+ADD CONSTRAINT fk_SalesPerson_id
+FOREIGN KEY (SalesPerson_id) REFERENCES
+dbo.DimSalesPerson(SalesPerson_id);
+
+ALTER TABLE dbo.FactSalesOrderHeader
+ADD CONSTRAINT fk_CreditCard
+FOREIGN KEY (CreditCardID) REFERENCES
+dbo.DimCreditCard(CreditCardID);
+
+ALTER TABLE dbo.FactSalesOrderHeader
+ADD CONSTRAINT fk_Product
+FOREIGN KEY (ProductKey) REFERENCES
+dbo.DimProduct(ProductKey);
+
+ALTER TABLE dbo.FactSalesOrderHeader
+ADD CONSTRAINT fk_Customer
+FOREIGN KEY (CustomerKey) REFERENCES
+dbo.DimCustomer(CustomerKey);
+
+ALTER TABLE dbo.FactSalesOrderHeader
+ADD CONSTRAINT fk_Date
+FOREIGN KEY (DateKey) REFERENCES
+dbo.DimDate(DateKey);
+
+**Fact inventory**
+
+create table dbo.FactInventory(
+Inventory_id int identity(1,1) primary key,
+ProductKey int,
+ProductSubcategoryID int,
+ProductDescriptionID int,
+LocationID int,
+TransactionID int,
+ProductCategoryKey int,
+ProductPhotoID int,
+ProductModelID int
+);
+
+**Dim Location**
+
+CREATE TABLE dbo.DimLocation(
+	[LocationID] [smallint] IDENTITY(1,1) NOT NULL,
+	[Name] varchar(255) NOT NULL,
+	[CostRate] [smallmoney] NOT NULL,
+	[Availability] [decimal](8, 2) NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_Location_LocationID] PRIMARY KEY CLUSTERED 
+(
+	[LocationID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim productdescription**
+
+CREATE TABLE dbo.DimProductDescription(
+	[ProductDescriptionID] [int] IDENTITY(1,1) NOT NULL,
+	[Description] [nvarchar](400) NOT NULL,
+	[rowguid] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_ProductDescription_ProductDescriptionID] PRIMARY KEY CLUSTERED 
+(
+	[ProductDescriptionID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim transaction history**
+
+CREATE TABLE dbo.DimTransactionHistory(
+	[TransactionID] [int] IDENTITY(100000,1) NOT NULL,
+	[ProductID] [int] NOT NULL,
+	[ReferenceOrderID] [int] NOT NULL,
+	[ReferenceOrderLineID] [int] NOT NULL,
+	[TransactionDate] [datetime] NOT NULL,
+	[TransactionType] [nchar](1) NOT NULL,
+	[Quantity] [int] NOT NULL,
+	[ActualCost] [money] NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_TransactionHistory_TransactionID] PRIMARY KEY CLUSTERED 
+(
+	[TransactionID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim Product Photo**
+
+CREATE TABLE dbo.DimProductPhoto(
+	[ProductPhotoID] [int] IDENTITY(1,1) NOT NULL,
+	[ThumbNailPhoto] [varbinary](max) NULL,
+	[ThumbnailPhotoFileName] [nvarchar](50) NULL,
+	[LargePhoto] [varbinary](max) NULL,
+	[LargePhotoFileName] [nvarchar](50) NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_ProductPhoto_ProductPhotoID] PRIMARY KEY CLUSTERED 
+(
+	[ProductPhotoID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+**Dim Product Model**
+
+CREATE TABLE dbo.DimProductModel(
+	[ProductModelID] [int] IDENTITY(1,1) NOT NULL,
+	[Name] varchar(255) NOT NULL,
+	[CatalogDescription] varchar(500) NULL,
+	[Instructions] varchar(500) NULL,
+	[rowguid] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_ProductModel_ProductModelID] PRIMARY KEY CLUSTERED 
+(
+	[ProductModelID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim product sub category**
+
+CREATE TABLE dbo.DimProductSubCategory(
+	[ProductSubcategoryID] [int] IDENTITY(1,1) NOT NULL,
+	[ProductCategoryID] [int] NOT NULL,
+	[Name] varchar(255) NOT NULL,
+	[rowguid] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_ProductSubcategory_ProductSubcategoryID] PRIMARY KEY CLUSTERED 
+(
+	[ProductSubcategoryID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Inventory foreign keys**
+
+ALTER TABLE dbo.FactInventory
+ADD CONSTRAINT fk_TransactionID
+FOREIGN KEY (TransactionID) REFERENCES
+dbo.DimTransactionHistory(TransactionID);
+
+ALTER TABLE dbo.FactInventory
+ADD CONSTRAINT fk_LocationID
+FOREIGN KEY (LocationID) REFERENCES
+dbo.DimLocation(LocationID);
+
+ALTER TABLE dbo.FactInventory
+ADD CONSTRAINT fk_ProductDescriptionID
+FOREIGN KEY (ProductDescriptionID) REFERENCES
+dbo.DimProductDescription(ProductDescriptionID);
+
+ALTER TABLE dbo.FactInventory
+ADD CONSTRAINT fk_ProductSubcategoryID
+FOREIGN KEY (ProductSubcategoryID) REFERENCES
+dbo.DimProductSubCategory(ProductSubcategoryID);
+
+ALTER TABLE dbo.FactInventory
+ADD CONSTRAINT fk_ProductCategoryKey
+FOREIGN KEY (ProductCategoryKey) REFERENCES
+dbo.DimProductCategory(ProductCategoryKey);
+
+ALTER TABLE dbo.FactInventory
+ADD CONSTRAINT fk_ProductPhotoID
+FOREIGN KEY (ProductPhotoID) REFERENCES
+dbo.DimProductPhoto(ProductPhotoID);
+
+ALTER TABLE dbo.FactInventory
+ADD CONSTRAINT fk_ProductKey
+FOREIGN KEY (ProductKey) REFERENCES
+dbo.DimProduct(ProductKey);
+
+ALTER TABLE dbo.FactInventory
+ADD CONSTRAINT fk_ProductModelID
+FOREIGN KEY (ProductModelID) REFERENCES
+dbo.DimProductModel(ProductModelID);
+
+
+**Fact Human Resources**
+
+create table dbo.FactHumanResources(
+Inventory_id int identity(1,1) primary key,
+ProductKey int,
+ProductSubcategoryID int,
+ProductDescriptionID int,
+LocationID int,
+TransactionID int,
+ProductCategoryKey int,
+ProductPhotoID int,
+ProductModelID int
+);
+
+**Dim shift**
+
+CREATE TABLE dbo.DimShift(
+	[ShiftID] int IDENTITY(1,1) NOT NULL,
+	[Name] varchar(255) NOT NULL,
+	[StartTime] [time](7) NOT NULL,
+	[EndTime] [time](7) NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_Shift_ShiftID] PRIMARY KEY CLUSTERED 
+(
+	[ShiftID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim Employee*
+
+CREATE TABLE dbo.DimEmployee(
+	[BusinessEntityID] [int] NOT NULL,
+	[NationalIDNumber] [nvarchar](15) NOT NULL,
+	[LoginID] [nvarchar](256) NOT NULL,
+	[OrganizationNode] int NULL,
+	[JobTitle] [nvarchar](50) NOT NULL,
+	[BirthDate] [date] NOT NULL,
+	[MaritalStatus] [nchar](1) NOT NULL,
+	[Gender] [nchar](1) NOT NULL,
+	[HireDate] [date] NOT NULL,
+	[SalariedFlag] int NOT NULL,
+	[VacationHours] [smallint] NOT NULL,
+	[SickLeaveHours] [smallint] NOT NULL,
+	[CurrentFlag] int NOT NULL,
+	[rowguid] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_Employee_BusinessEntityID] PRIMARY KEY CLUSTERED 
+(
+	[BusinessEntityID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim job cadidate**
+
+CREATE TABLE dbo.DimJobCandidate(
+	[JobCandidateID] [int] IDENTITY(1,1) NOT NULL,
+	[BusinessEntityID] [int] NULL,
+	[Resume] varchar(500) NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_JobCandidate_JobCandidateID] PRIMARY KEY CLUSTERED 
+(
+	[JobCandidateID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim department**
+
+CREATE TABLE dbo.DimDepartment(
+	[DepartmentID] int IDENTITY(1,1) NOT NULL,
+	[Name] varchar(255) NOT NULL,
+	[GroupName] varchar(255) NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_Department_DepartmentID] PRIMARY KEY CLUSTERED 
+(
+	[DepartmentID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim departmentHistory **
+
+CREATE TABLE dbo.DimDepartmentHistory(
+	[BusinessEntityID] [int] NOT NULL,
+	[DepartmentID] int NOT NULL,
+	[ShiftID] int NOT NULL,
+	[StartDate] [date] NOT NULL,
+	[EndDate] [date] NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_EmployeeDepartmentHistory_BusinessEntityID_StartDate_DepartmentID] PRIMARY KEY CLUSTERED 
+(
+	[BusinessEntityID] ASC,
+	[StartDate] ASC,
+	[DepartmentID] ASC,
+	[ShiftID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim pay history**
+
+CREATE TABLE dbo.DimPayHistory(
+	[BusinessEntityID] [int] NOT NULL,
+	[RateChangeDate] [datetime] NOT NULL,
+	[Rate] [money] NOT NULL,
+	[PayFrequency] [tinyint] NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_EmployeePayHistory_BusinessEntityID_RateChangeDate] PRIMARY KEY CLUSTERED 
+(
+	[BusinessEntityID] ASC,
+	[RateChangeDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**HR Foreign keys**
+
+ALTER TABLE dbo.FactHumanResources
+ADD CONSTRAINT fk_BusinessEntityID
+FOREIGN KEY (BusinessEntityID) REFERENCES
+dbo.DimPayHistory(BusinessEntityID);
+
+ALTER TABLE dbo.FactHumanResources
+ADD CONSTRAINT fk_JobCandidateID
+FOREIGN KEY (JobCandidateID) REFERENCES
+dbo.DimJobCandidate(JobCandidateID);
+
+ALTER TABLE dbo.FactHumanResources
+ADD CONSTRAINT fk_BusinessEntityID
+FOREIGN KEY (BusinessEntityID) REFERENCES
+dbo.DimEmployee(BusinessEntityID);
+
+ALTER TABLE dbo.FactHumanResources
+ADD CONSTRAINT fk_DepartmentID
+FOREIGN KEY (DepartmentID) REFERENCES
+dbo.DimDepartment(DepartmentID);
+
+ALTER TABLE dbo.FactHumanResources
+ADD CONSTRAINT fk_StartDate
+FOREIGN KEY (StartDate) REFERENCES
+dbo.DimDepartmentHistory(StartDate);
+
+ALTER TABLE dbo.FactHumanResources
+ADD CONSTRAINT fk_PayHistoryID
+FOREIGN KEY (PayHistoryID) REFERENCES
+dbo.DimPayHistory(PayHistoryID);
+
+**Fact Vendor**
+
+create table dbo.FactVendor(
+Vendor_id int identity(1,1) primary key,
+BusinessEntityID int,
+PurchaseOrderDeatailID int,
+ShipMethodID int,
+ProducttID int
+);
+
+**Dim Vendor**
+
+CREATE TABLE dbo.DimVendor(
+	[BusinessEntityID] [int] NOT NULL,
+	[AccountNumber] int NOT NULL,
+	[Name] varchar(255) NOT NULL,
+	[CreditRating] [tinyint] NOT NULL,
+	[PreferredVendorStatus] varchar(255) NOT NULL,
+	[ActiveFlag] varchar(255) NOT NULL,
+	[PurchasingWebServiceURL] [nvarchar](1024) NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_Vendor_BusinessEntityID] PRIMARY KEY CLUSTERED 
+(
+	[BusinessEntityID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim purchaseOrderHeader**
+
+CREATE TABLE dbo.DimPurchaseOrderHeader(
+	[PurchaseOrderID] [int] IDENTITY(1,1) NOT NULL,
+	[RevisionNumber] [tinyint] NOT NULL,
+	[Status] [tinyint] NOT NULL,
+	[EmployeeID] [int] NOT NULL,
+	[VendorID] [int] NOT NULL,
+	[ShipMethodID] [int] NOT NULL,
+	[OrderDate] [datetime] NOT NULL,
+	[ShipDate] [datetime] NULL,
+	[SubTotal] [money] NOT NULL,
+	[TaxAmt] [money] NOT NULL,
+	[Freight] [money] NOT NULL,
+	[TotalDue]  AS (isnull(([SubTotal]+[TaxAmt])+[Freight],(0))) PERSISTED NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_PurchaseOrderHeader_PurchaseOrderID] PRIMARY KEY CLUSTERED 
+(
+	[PurchaseOrderID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim PurchaseOrderDetail**
+
+CREATE TABLE dbo.DimPurchaseOrderDetail(
+	[PurchaseOrderID] [int] NOT NULL,
+	[PurchaseOrderDetailID] [int] IDENTITY(1,1) NOT NULL,
+	[DueDate] [datetime] NOT NULL,
+	[OrderQty] [smallint] NOT NULL,
+	[ProductID] [int] NOT NULL,
+	[UnitPrice] [money] NOT NULL,
+	[LineTotal]  AS (isnull([OrderQty]*[UnitPrice],(0.00))),
+	[ReceivedQty] [decimal](8, 2) NOT NULL,
+	[RejectedQty] [decimal](8, 2) NOT NULL,
+	[StockedQty]  AS (isnull([ReceivedQty]-[RejectedQty],(0.00))),
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_PurchaseOrderDetail_PurchaseOrderDetailID] PRIMARY KEY CLUSTERED 
+(
+	
+	[PurchaseOrderDetailID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim ShipMethod**
+
+CREATE TABLE dbo.DimShipMethod(
+	[ShipMethodID] [int] IDENTITY(1,1) NOT NULL,
+	[Name] varchar(255) NOT NULL,
+	[ShipBase] [money] NOT NULL,
+	[ShipRate] [money] NOT NULL,
+	[rowguid] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_ShipMethod_ShipMethodID] PRIMARY KEY CLUSTERED 
+(
+	[ShipMethodID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+**Dim Product Vendor**
+
+CREATE TABLE dbo.DimProductVendor(
+	[ProductID] [int] NOT NULL,
+	[BusinessEntityID] [int] NOT NULL,
+	[AverageLeadTime] [int] NOT NULL,
+	[StandardPrice] [money] NOT NULL,
+	[LastReceiptCost] [money] NULL,
+	[LastReceiptDate] [datetime] NULL,
+	[MinOrderQty] [int] NOT NULL,
+	[MaxOrderQty] [int] NOT NULL,
+	[OnOrderQty] [int] NULL,
+	[UnitMeasureCode] [nchar](3) NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_ProductVendor_ProductID_BusinessEntityID] PRIMARY KEY CLUSTERED 
+(
+	[ProductID] ASC,
+	[BusinessEntityID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
