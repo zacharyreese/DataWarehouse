@@ -1,6 +1,10 @@
 # DataWarehouse
 >Final project for Data Warehouse Design (CSCI 4132)
 
+## Personal Statement
+
+I acted as team lead fro this semester long data warehouse project. It was a great experience leading my team, as we followed an agile development methodology with sprints and dealines to keep the project running efficiently. There were many struggles with this project that we overcame as a team like such as the inclusion of new technology such as SSIS in Visual Studio to create automated flow charts. Afterwords, I am confident in the principles and fundamentals of creating and working with a Data Warehouse, Microsoft SSMS, SSIS in Visual Studio, and Erwin Data Modeler.
+
 ## Executive Summary
 Adventure Works Cycles is a bicycle manufacturing company that operatesaround the globe with many locations, over 300 employees, and millions of dollarsin revenue. The company’s resellers are located on three different continents:North America, Europe, and Asia. Adventure Works sells a multitude of productsincluding: Bikes, Accessories, Clothing, Components, Services, and more.
 
